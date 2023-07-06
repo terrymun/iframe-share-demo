@@ -49,13 +49,14 @@
     </table>
 
     <p>The image below is composited on a <code>&lt;canvas&gt;</code> element and should be downloaded.</p>
+    <input type="text" id="canvas-text" value="Dummy composited text" />
+    <input type="color" id="canvas-color" value="#ffffff" />
     <canvas id="canvas" width="320" height="320" style="display: block; border: 5px solid black"></canvas>
 
     <div style="display: flex; gap: 1rem; margin: 1rem 0">
       <button type="button" id="share-image">Share image</button>
       <button type="button" id="share-url">Share URL (https://example.com)</button>
       <button type="button" id="download-image">Download image</button>
-      
     </div>
 
     <div style="display: flex; gap: 1rem; margin: 1rem 0">
@@ -66,8 +67,13 @@
     <div id="error-log" style="color: red"></div>
 
     <script>
+      const image = new Image();
+      image.src = './test-image.jpg';
+
       const errorLog = document.getElementById('error-log');
       const canvas = document.getElementById('canvas');
+      const canvasText = document.getElementById('canvas-text');
+      const canvasColor = document.getElementById('canvas-color');
 
       const checkForWebShareSupport = () => {
         let dummyShareData = {
@@ -90,22 +96,19 @@
         canvas.height = renderHeight;
 
         const context = canvas.getContext('2d');
+        context.drawImage(image, 0, 0, 320 * dpr, 320 * dpr);
+        context.fillStyle = canvasColor.value;
+        context.beginPath();
+        context.arc(100 * dpr, 100 * dpr, 30 * dpr, 0, 2 * Math.PI, false);
+        context.fill();
 
-        const image = new Image();
-        image.src = './test-image.jpg';
-        image.onload = () => {
-          context.drawImage(image, 0, 0, 320 * dpr, 320 * dpr);
-          context.fillStyle = '#fff';
-          context.beginPath();
-          context.arc(100 * dpr, 100 * dpr, 30 * dpr, 0, 2 * Math.PI, false);
-          context.fill();
-
-          context.font = `${24 * dpr}px Arial`;
-          context.textAlign = 'center';
-          context.fillText('Dummy composited text', 160 * dpr, 280 * dpr);
-        };
+        context.font = `${24 * dpr}px Arial`;
+        context.textAlign = 'center';
+        context.fillText(canvasText.value ?? '', 160 * dpr, 280 * dpr);
       };
-      drawCanvas();
+      image.onload = () => drawCanvas();
+      canvasText.addEventListener('input', drawCanvas);
+      canvasColor.addEventListener('input', drawCanvas);
 
       document.getElementById('share-url').addEventListener('click', async () => {
         try {
