@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="initial-scale=1.0" />
+    <title>IFrame page with share</title>
+  </head>
+  <body>
+    <h1>IFrame page with share</h1>
+
+    <p>The image below is composited on a <code>&lt;canvas&lt;</code> element and should be downloaded.</p>
+    <canvas id="canvas" width="160" height="160" style="display: block; border: 5px solid black"></canvas>
+
+    <div style="display: flex; gap: 1rem; margin: 1rem 0">
+      <button type="button" id="share-image">Share image</button>
+      <button type="button" id="download-image">Download image</button>
+    </div>
+
+    <button type="button" id="share-url">Share URL (https://example.com)</button>
+
+    <div id="error-log" style="color: red"></div>
+
+    <script>
+      const errorLog = document.getElementById('error-log');
+      const canvas = document.getElementById('canvas');
+
+      const drawCanvas = () => {
+        const context = canvas.getContext('2d');
+
+        const image = new Image();
+        image.src = './test-image.jpg';
+        image.onload = () => {
+          context.drawImage(image, 0, 0, 160, 160);
+          context.fillStyle = '#fff';
+          context.beginPath();
+          context.arc(50, 50, 15, 0, 2 * Math.PI, false);
+          context.fill();
+
+          context.font = '12px Arial';
+          context.textAlign = 'center';
+          context.fillText('Dummy composited text', 80, 140);
+        };
+      };
+      drawCanvas();
+
+      document.getElementById('share-url').addEventListener('click', async () => {
+        try {
+          await navigator.share({
+            url: 'https://example.com',
+          });
+        } catch (e) {
+          errorLog.textContent = `Error: ${e}`;
+        }
+      });
+
+      document.getElementById('share-image').addEventListener('click', async () => {
+        const dataUrl = canvas.toDataURL();
+        const blob = await (await fetch(dataUrl)).blob();
+        const files = [
+          new File([blob], 'test.png', {
+            type: blob.type,
+            lastModified: new Date().getTime(),
+          }),
+        ];
+
+        try {
+          await navigator.share({
+            files,
+            title: 'Image',
+            text: 'My beautiful image',
+          });
+        } catch (e) {
+          errorLog.textContent = `Error: ${e}`;
+        }
+      });
+
+      document.getElementById('download-image').addEventListener('click', () => {
+        const link = document.createElement('a');
+        link.download = 'test.png';
+        link.href = canvas.toDataURL();
+        link.click();
+      });
+    </script>
+  </body>
+</html>
