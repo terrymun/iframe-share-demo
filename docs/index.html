@@ -52,10 +52,10 @@
 
     <div style="display: flex; gap: 1rem; margin: 1rem 0">
       <button type="button" id="share-image">Share image</button>
+      <button type="button" id="share-url">Share URL (https://example.com)</button>
       <button type="button" id="download-image">Download image</button>
+      <button type="button" id="post-message">Post message</button>
     </div>
-
-    <button type="button" id="share-url">Share URL (https://example.com)</button>
 
     <div id="error-log" style="color: red"></div>
 
@@ -137,6 +137,10 @@
         link.download = 'test.png';
         link.href = canvas.toDataURL();
         link.click();
+      });
+
+      document.getElementById('post-message').addEventListener('click', () => {
+        postMessage('I am a dummy message from the iframe!', '*');
       });
     </script>
   </body>
