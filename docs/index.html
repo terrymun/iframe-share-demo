@@ -56,7 +56,11 @@
     <div style="display: flex; gap: 1rem; margin: 1rem 0">
       <button type="button" id="share-image">Share image</button>
       <button type="button" id="share-url">Share URL (https://example.com)</button>
-      <button type="button" id="download-image">Download image</button>
+    </div>
+
+    <div style="display: flex; gap: 1rem; margin: 1rem 0">
+      <button type="button" id="download-canvas">Download canvas</button>
+      <a href="./test-image.jpg" download="my-custom-filename.jpg">Download static image</button>
     </div>
 
     <div style="display: flex; gap: 1rem; margin: 1rem 0">
@@ -141,7 +145,7 @@
         }
       });
 
-      document.getElementById('download-image').addEventListener('click', () => {
+      document.getElementById('download-canvas').addEventListener('click', () => {
         const link = document.createElement('a');
         link.download = 'test.png';
         link.href = canvas.toDataURL();
